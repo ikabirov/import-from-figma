@@ -1,0 +1,12 @@
+{
+  "name": "import-from-figma",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "update": "node index.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  }
+}
