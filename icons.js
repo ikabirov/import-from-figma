@@ -26,8 +26,25 @@ async function loadIcons(id) {
     let i = 0
     for (const icon of iconsData) 
     {
-        const filename = icon.name.replace(/\//g, '-') + '.svg'
-        fs.writeFileSync(`icons/${filename}`, icon.text, {
+        const componentName = icon.name.replace(/[/ ]+/g, '')
+        const filename = componentName + '.js'
+
+        
+        const component = `
+/**
+* @param {TemplateLiteralFn} html
+*/
+function ${componentName}(html) {
+    return html\`
+${icon.text}\`
+}
+
+export {
+    ${componentName},
+}
+`
+
+        fs.writeFileSync(`icons/${filename}`, component, {
             encoding: 'utf-8'
         })    
     }
