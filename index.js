@@ -10,9 +10,9 @@ async function loadDocument() {
     const styles = json.styles
 
 	// writeColors(styles)
-	writeColorsByPageId('1:2') // Components -> Color
+	writeColorsByPageId('180:0') // Colors
 	// writeFonts(styles)
-	writeFontsByPageId('2:7') // Components -> Title and texts
+	writeFontsByPageId('180:1') // Title and texts
 
 	loadIcons('65:812') // Icons & Illustrations -> Icons
 }
