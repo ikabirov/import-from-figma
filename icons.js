@@ -2,6 +2,9 @@ const fs = require('fs')
 const fetch = require('node-fetch')
 const {loadNode, loadSvg} = require('./loader')
 
+const currentColor = 'black'
+const currentColorRegexp = new RegExp(currentColor, 'g')
+
 async function loadIcons(id) {
     const iconsPage = await loadNode(id)
     const components = iconsPage.components
@@ -36,7 +39,7 @@ async function loadIcons(id) {
 */
 function ${componentName}(html) {
     return html\`
-${icon.text}\`
+${icon.text.replace(currentColorRegexp, 'currentColor')}\`
 }
 
 export {
