@@ -29,6 +29,11 @@ async function loadIcons(id) {
     let i = 0
     for (const icon of iconsData) 
     {
+        if (!icon.text)
+        {
+            console.log(`incorrect icon: ${icon.name}`)
+            continue
+        }
         const componentName = icon.name.replace(/[/ ]+/g, '')
         const filename = componentName + '.js'
 
