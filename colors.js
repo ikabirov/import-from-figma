@@ -47,7 +47,15 @@ async function writeColors(styles) {
         }))
 
     const content = `:root {
-	${fillNodes
+    ${fillNodes
+        .filter(fill => {
+            if (fill.name.match(/[а-яА-Я]+/))
+            {
+                console.log('incorrect color name: ' + fill.name)
+                return false
+            }
+            return true
+        })
         .map(fill => `--color-${fill.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-')}: ${formatColor(fill.color, fill.opacity)};`)
         .join('\n\t')
     }

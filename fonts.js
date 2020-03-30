@@ -43,7 +43,15 @@ async function writeFonts(styles) {
         }))
 
     const content = `:root {
-	${textNodes
+    ${textNodes
+        .filter(node => {
+            if (node.name.match(/[а-яА-Я]+/))
+            {
+                console.log('incorrect font name: ' + node.name)
+                return false
+            }
+            return true
+        })
         .map(node => `--font-${node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-')}: ${formatFont(node)};`)
         .join('\n\t')
     }
