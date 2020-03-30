@@ -1,5 +1,5 @@
 const fs = require('fs')
-const fetch = require('node-fetch')
+const fetch = require('fetch-retry')(require('node-fetch'))
 const {loadNode, loadSvg} = require('./loader')
 
 const currentColor = 'black'
@@ -16,12 +16,19 @@ async function loadIcons(id) {
     for (const id of ids)
     {
         const iconUrl = svgUrls.images[id]
-        const iconInfo = fetch(iconUrl)
+        const iconInfo = fetch(iconUrl, {
+            retryDelay: function(attempt) {
+                console.log(`retry #${attempt + 1}: ${iconUrl}`)
+                return 0
+            },
+            retries: 5
+        })
             .then(res => res.text())
             .then(iconText => ({
                 name: components[id].name,
                 text: iconText,
             }))
+            .catch(e => console.log(e))
         icons.push(iconInfo)
     }
 
