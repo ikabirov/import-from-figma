@@ -15,6 +15,7 @@ async function loadDocument() {
 	writeFontsByPageId('180:1') // Title and texts
 
 	loadIcons('65:812') // Icons & Illustrations -> Icons
+	loadIcons('2460:1') // Icons & Illustrations -> Illustrations
 }
 
 loadDocument()
