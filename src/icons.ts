@@ -40,7 +40,7 @@ function saveIcon(name: string, text: string) {
         return ${svgText}
     }
         
-    export default ${componentName}
+    export { ${componentName} }
 `
 
   saveIconComponent(componentName, component)
