@@ -37,14 +37,18 @@ function saveIcon(name: string, text: string) {
     import React, { FC } from 'react'
     
     const ${componentName}: FC<{}> = () => {
-        return ${svgText}
+        return <div
+        dangerouslySetInnerHTML={{
+          __html: \`${svgText}\`,
+        }}
+      />
     }
         
     export { ${componentName} }
 `
 
   saveIconComponent(componentName, component)
-  saveIconSvg(componentName, svgText)
+  // saveIconSvg(componentName, svgText)
 }
 
 async function loadIcons(id: string) {
