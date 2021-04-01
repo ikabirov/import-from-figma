@@ -1,7 +1,6 @@
-import { loadNode, loadNodes } from './loader'
-import { writeFileSync } from 'fs'
-import { Color, Rectangle } from 'figma-js'
-import { saveColorTheme } from './resource'
+import { Color } from 'figma-js'
+
+import { saveColorTheme } from '../resource'
 
 type ColorData = {
   name: string
@@ -9,7 +8,7 @@ type ColorData = {
   opacity: number
 }
 
-const OPACITY_PRECITION = 3
+const OPACITY_PRECISION = 3
 
 function formatHex(rgbValue: number) {
   return rgbValue.toString(16).padStart(2, '0').toLocaleUpperCase()
@@ -19,10 +18,10 @@ function formatColor(color: Color, opacity: number) {
   const r = Math.round(color.r * 255)
   const g = Math.round(color.g * 255)
   const b = Math.round(color.b * 255)
-  const precition = 10 ** OPACITY_PRECITION
+  const precision = 10 ** OPACITY_PRECISION
 
   if (typeof opacity == 'number') {
-    return `rgba(${r}, ${g}, ${b}, ${Math.round(opacity * precition) / precition})`
+    return `rgba(${r}, ${g}, ${b}, ${Math.round(opacity * precision) / precision})`
   }
 
   return `#${formatHex(r)}${formatHex(g)}${formatHex(b)}`
@@ -43,33 +42,20 @@ function parseColorName(fullName: string) {
   }
 }
 
-async function writeColors(pageId: string) {
-  const node = await loadNode(pageId)
-
-  if (!node?.styles) {
-    return
-  }
-
-  const { styles } = node
-  const fillKeys = Object.keys(styles).filter((v) => styles[v].styleType == 'FILL')
-
+async function writeColors(colors: ColorData[]) {
   const themes: Record<string, ColorData[]> = {
     dark: [],
     light: [],
   }
 
-  const nodes = await loadNodes(fillKeys)
-  nodes
-    .map((node) => node?.document as Rectangle)
-    .forEach((v) => {
-      const { theme, name } = parseColorName(v.name)
+  colors.forEach((color) => {
+    const { theme, name } = parseColorName(color.name)
 
-      themes[theme].push({
-        name,
-        color: v.fills[0].color!,
-        opacity: v.fills[0].opacity!,
-      })
+    themes[theme].push({
+      ...color,
+      name,
     })
+  })
 
   for (const theme of Object.keys(themes)) {
     const colorsCss = themes[theme]

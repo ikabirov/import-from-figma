@@ -1,8 +1,8 @@
-import { loadNodes, loadNode } from './loader'
-import { TypeStyle, Text } from 'figma-js'
-import { saveFontsCss } from './resource'
+import { Typography } from '../dsl'
+import { saveFontsCss } from '../resource'
 
-function formatFont(fontNode: TypeStyle) {
+
+function formatFont(fontNode: Typography) {
   const { italic, fontWeight, fontSize, lineHeightPx, fontFamily } = fontNode
   return [
     italic ? 'italic' : null,
@@ -14,24 +14,8 @@ function formatFont(fontNode: TypeStyle) {
     .join(' ')
 }
 
-async function writeFonts(pageId: string) {
-  const node = await loadNode(pageId)
-
-  if (!node?.styles) {
-    return
-  }
-
-  const { styles } = node
-  const textKeys = Object.keys(styles).filter((v) => styles[v].styleType == 'TEXT')
-
-  const textNodes = (await loadNodes(textKeys))
-    .map((v) => v!.document)
-    .map((v) => ({
-      name: v.name,
-      ...(v as Text).style,
-    }))
-
-  const variablesText = textNodes
+async function writeFonts(typographies: Typography[]) {
+  const variablesText = typographies
     .filter((node) => {
       if (node.name.match(/[а-яА-Я]+/)) {
         console.log('incorrect font name: ' + node.name)
