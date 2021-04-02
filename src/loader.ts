@@ -1,13 +1,16 @@
-import * as dotenv from 'dotenv'
-import { Client } from 'figma-js'
+import { Client, ClientInterface } from 'figma-js'
+import { Config } from './config'
 
-dotenv.config()
+let client: ClientInterface
+let documentId: string
 
-const client = Client({
-  personalAccessToken: process.env.FIGMA_TOKEN,
-})
+function initializeLoader(config: Config) {
+  client = Client({
+    personalAccessToken: config.figmaToken,
+  })
 
-const documentId = process.env.DOCUMENT_ID!
+  documentId = config.projectId
+}
 
 function loadRoot() {
   return client.file(documentId)
@@ -32,4 +35,4 @@ function loadSvgUrls(ids: string[]) {
   })
 }
 
-export { loadRoot, loadNode, loadNodes, loadSvgUrls }
+export { initializeLoader, loadRoot, loadNode, loadNodes, loadSvgUrls }
