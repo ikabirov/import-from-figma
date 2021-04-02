@@ -3,11 +3,12 @@ import { join } from 'path'
 import { mkdir } from 'shelljs'
 import { format } from 'prettier'
 
-const BASE_FOLDER = 'generated'
-const CSS_FOLDER = join(BASE_FOLDER, 'css')
-const FONTS_FOLDER = join(CSS_FOLDER, 'fonts')
-const COLORS_FOLDER = join(CSS_FOLDER, 'colors')
-const ICONS_FOLDER = join(BASE_FOLDER, 'icons')
+import { Config } from '../config'
+
+let BASE_FOLDER: string
+let FONTS_FOLDER: string
+let COLORS_FOLDER: string
+let ICONS_FOLDER: string
 
 const BASE_PRETTIER_CONFIG = {
   printWidth: 100,
@@ -28,10 +29,17 @@ const CSS_PRETTIER_CONFIG = {
   parser: 'css',
 }
 
-function clean() {
-  rmdirSync(BASE_FOLDER, {
-    recursive: true,
-  })
+function initializeReactResource(config: Config) {
+  const { outputDir, iconsDir, colorsDir, typographyDir } = config
+
+  BASE_FOLDER = outputDir
+  FONTS_FOLDER = typographyDir ? join(BASE_FOLDER, typographyDir) : join(BASE_FOLDER, 'css', 'fonts')
+  COLORS_FOLDER = colorsDir ? join(BASE_FOLDER, colorsDir) : join(BASE_FOLDER, 'css', 'colors')
+  ICONS_FOLDER = iconsDir ? join(BASE_FOLDER, iconsDir) : join(BASE_FOLDER, 'icons')
+
+  rmdirSync(FONTS_FOLDER, { recursive: true })
+  rmdirSync(COLORS_FOLDER, { recursive: true })
+  rmdirSync(ICONS_FOLDER, { recursive: true })
 
   mkdir('-p', FONTS_FOLDER)
   mkdir('-p', COLORS_FOLDER)
@@ -68,4 +76,4 @@ function saveIconComponent(name: string, content: string) {
   })
 }
 
-export { clean, saveColorTheme, saveFontsCss, saveIconComponent, saveIconSvg }
+export { initializeReactResource, saveColorTheme, saveFontsCss, saveIconComponent, saveIconSvg }

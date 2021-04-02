@@ -1,6 +1,6 @@
 import { Icons } from '../dsl'
 
-import { saveIconComponent } from '../resource'
+import { saveIconComponent } from './resource'
 
 const currentColor = 'black'
 const currentColorRegexp = new RegExp(currentColor, 'g')

@@ -3,4 +3,7 @@ export type Config = {
     projectId: string
     exportType: 'react' | 'flutter'
     outputDir: string
+    iconsDir?: string
+    colorsDir?: string
+    typographyDir?: string
 }

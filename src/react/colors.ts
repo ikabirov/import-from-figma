@@ -1,6 +1,6 @@
 import { Color } from 'figma-js'
 
-import { saveColorTheme } from '../resource'
+import { saveColorTheme } from './resource'
 
 type ColorData = {
   name: string
