@@ -33,7 +33,9 @@ function initializeReactResource(config: Config) {
   const { outputDir, iconsDir, colorsDir, typographyDir } = config
 
   BASE_FOLDER = outputDir
-  FONTS_FOLDER = typographyDir ? join(BASE_FOLDER, typographyDir) : join(BASE_FOLDER, 'css', 'fonts')
+  FONTS_FOLDER = typographyDir
+    ? join(BASE_FOLDER, typographyDir)
+    : join(BASE_FOLDER, 'css', 'fonts')
   COLORS_FOLDER = colorsDir ? join(BASE_FOLDER, colorsDir) : join(BASE_FOLDER, 'css', 'colors')
   ICONS_FOLDER = iconsDir ? join(BASE_FOLDER, iconsDir) : join(BASE_FOLDER, 'icons')
 

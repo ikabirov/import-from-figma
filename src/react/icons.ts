@@ -35,13 +35,13 @@ function saveIcon(name: string, text: string) {
   const component = `
     import React, { FC } from 'react'
     
-    const ${componentName}: FC<{}> = () => {
-        return <div
+    const ${componentName}: FC<{}> = () => 
+      <div
         dangerouslySetInnerHTML={{
           __html: \`${svgText}\`,
-        }}
+        }} style={{display: 'flex'}}
       />
-    }
+    
         
     export { ${componentName} }
 `
@@ -51,7 +51,7 @@ function saveIcon(name: string, text: string) {
 }
 
 async function writeIcons(icons: Icons) {
-  Object.keys(icons).forEach(key => saveIcon(key, icons[key]))
+  Object.keys(icons).forEach((key) => saveIcon(key, icons[key]))
 }
 
 export { writeIcons }

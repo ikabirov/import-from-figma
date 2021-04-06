@@ -1,7 +1,6 @@
 import { Typography } from '../dsl'
 import { saveFontsCss } from './resource'
 
-
 function formatFont(fontNode: Typography) {
   const { italic, fontWeight, fontSize, lineHeightPx, fontFamily } = fontNode
   return [
@@ -14,7 +13,7 @@ function formatFont(fontNode: Typography) {
     .join(' ')
 }
 
-async function writeFonts(typographies: Typography[],) {
+async function writeFonts(typographies: Typography[]) {
   const variablesText = typographies
     .filter((node) => {
       if (node.name.match(/[а-яА-Я]+/)) {
