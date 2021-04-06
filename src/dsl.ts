@@ -42,6 +42,10 @@ async function parseTypography(pageId: string): Promise<Typography[] | undefined
   const { styles } = node
   const textKeys = Object.keys(styles).filter((v) => styles[v].styleType == 'TEXT')
 
+  if (!textKeys.length) {
+    return []
+  }
+
   const textNodes: Typography[] = (await loadNodes(textKeys))
     .map((v) => v!.document)
     .map((v) => ({
@@ -85,13 +89,13 @@ async function parseIcons(pageId: string): Promise<Icons | undefined> {
   const { components } = node
   const ids = Object.keys(components)
 
-  const {
-    data: { images },
-  } = await loadSvgUrls(ids)
+  const images = await loadSvgUrls(ids)
 
   const icons: Icons = {}
 
   const queue: Promise<unknown>[] = []
+
+  let completed = 0
 
   for (const id of ids) {
     const iconUrl = images[id]
@@ -100,15 +104,22 @@ async function parseIcons(pageId: string): Promise<Icons | undefined> {
       .then((iconText) => (icons[components[id].name] = iconText))
       .catch((e) => console.log(e))
 
+    if (queue.length === 0) {
+      console.log(`fetch icons progress: ${((completed / ids.length) * 100).toFixed(2)}%`)
+    }
+
     queue.push(saveIconPromise)
 
     if (queue.length === QUEUE_SIZE) {
       await Promise.all(queue)
       queue.length = 0
+      completed += QUEUE_SIZE
     }
   }
 
   await Promise.all(queue)
+
+  console.log(`fetch icons progress: 100%`)
 
   return icons
 }

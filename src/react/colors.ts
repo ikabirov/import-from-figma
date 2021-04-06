@@ -51,10 +51,14 @@ async function writeColors(colors: ColorData[]) {
   colors.forEach((color) => {
     const { theme, name } = parseColorName(color.name)
 
-    themes[theme].push({
-      ...color,
-      name,
-    })
+    if (themes[theme]) {
+      themes[theme].push({
+        ...color,
+        name,
+      })
+    } else {
+      console.log(`Error: incorrect color name '${color.name}'`)
+    }
   })
 
   for (const theme of Object.keys(themes)) {

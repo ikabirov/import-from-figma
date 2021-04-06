@@ -13,7 +13,7 @@ function formatComponentName(name: string) {
     .trim()
     .split(' ')
 
-  return words.map((word) => word.slice(0, 1).toLocaleUpperCase() + word.slice(1)).join('')
+  return 'Icon' + words.map((word) => word.slice(0, 1).toLocaleUpperCase() + word.slice(1)).join('')
 }
 
 function saveIcon(name: string, text: string) {
