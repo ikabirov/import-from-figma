@@ -70,7 +70,13 @@ async function writeColors(colors: ColorData[]) {
         }
         return true
       })
-      .map((fill) => `--color-${fill.name}: ${formatColor(fill.color, fill.opacity)};`)
+      .map((fill) => {
+        if (!fill.color) {
+          console.log(`unsupported color: [${theme}] ${fill.name}`)
+          return ''
+        }
+        return `--color-${fill.name}: ${formatColor(fill.color, fill.opacity)};`
+      })
       .join('\n\t')
 
     const content = `:root { ${colorsCss} }`

@@ -1,5 +1,5 @@
 import { writeFileSync, rmdirSync } from 'fs'
-import { join } from 'path'
+import { join, dirname } from 'path'
 import { mkdir } from 'shelljs'
 import { format } from 'prettier'
 
@@ -42,40 +42,36 @@ function initializeReactResource(config: Config) {
   rmdirSync(FONTS_FOLDER, { recursive: true })
   rmdirSync(COLORS_FOLDER, { recursive: true })
   rmdirSync(ICONS_FOLDER, { recursive: true })
+}
 
-  mkdir('-p', FONTS_FOLDER)
-  mkdir('-p', COLORS_FOLDER)
-  mkdir('-p', ICONS_FOLDER)
+function writeFile(path: string, content: string) {
+  mkdir('-p', dirname(path))
+
+  writeFileSync(path, content, {
+    encoding: 'utf-8',
+  })
 }
 
 function saveColorTheme(name: string, content: string) {
   const formattedContent = format(content, CSS_PRETTIER_CONFIG)
 
-  writeFileSync(join(COLORS_FOLDER, `${name}.css`), formattedContent, {
-    encoding: 'utf-8',
-  })
+  writeFile(join(COLORS_FOLDER, `${name}.css`), formattedContent)
 }
 
 function saveFontsCss(content: string) {
   const formattedContent = format(content, CSS_PRETTIER_CONFIG)
 
-  writeFileSync(join(FONTS_FOLDER, 'common.css'), formattedContent, {
-    encoding: 'utf-8',
-  })
+  writeFile(join(FONTS_FOLDER, 'common.css'), formattedContent)
 }
 
-function saveIconSvg(name: string, content: string) {
-  writeFileSync(join(ICONS_FOLDER, `${name}.svg`), content, {
-    encoding: 'utf-8',
-  })
+function saveIconSvg(path: string, content: string) {
+  writeFile(join(ICONS_FOLDER, path), content)
 }
 
 function saveIconComponent(name: string, content: string) {
   const formattedContent = format(content, TS_PRETTIER_CONFIG)
 
-  writeFileSync(join(ICONS_FOLDER, `${name}.tsx`), formattedContent, {
-    encoding: 'utf-8',
-  })
+  writeFile(join(ICONS_FOLDER, `${name}.tsx`), formattedContent)
 }
 
 export { initializeReactResource, saveColorTheme, saveFontsCss, saveIconComponent, saveIconSvg }

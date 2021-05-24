@@ -1,6 +1,6 @@
 import { Icons } from '../dsl'
 
-import { saveIconComponent } from './resource'
+import { saveIconComponent, saveIconSvg } from './resource'
 
 const currentColor = 'black'
 const currentColorRegexp = new RegExp(currentColor, 'g')
@@ -14,6 +14,12 @@ function formatComponentName(name: string) {
     .split(' ')
 
   return 'Icon' + words.map((word) => word.slice(0, 1).toLocaleUpperCase() + word.slice(1)).join('')
+}
+
+function formatSvgPath(name: string) {
+  const formattedName = name.replace(/\s+/gi, '')
+
+  return `svg/${formattedName}.svg`
 }
 
 function saveIcon(name: string, text: string) {
@@ -32,22 +38,26 @@ function saveIcon(name: string, text: string) {
 
   namesMap[componentName] = name
 
+  const svgPath = formatSvgPath(name)
+  const width = /width="(\d+)"/.exec(svgText)![1]
+  const height = /height="(\d+)"/.exec(svgText)![1]
+
   const component = `
     import React, { FC } from 'react'
+
+    import iconId from './${svgPath}'
     
-    const ${componentName}: FC<{}> = () => 
-      <div
-        dangerouslySetInnerHTML={{
-          __html: \`${svgText}\`,
-        }} style={{display: 'flex'}}
-      />
+    const ${componentName}: FC<{className?: string}> = ({className}) => 
+    <svg width="${width}" height="${height}" className={className}>
+    <use xlinkHref={\`#\${iconId}\`} />
+  </svg>
     
         
     export { ${componentName} }
 `
 
   saveIconComponent(componentName, component)
-  // saveIconSvg(componentName, svgText)
+  saveIconSvg(svgPath, svgText)
 }
 
 async function writeIcons(icons: Icons) {
