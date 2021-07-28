@@ -1823,7 +1823,7 @@ const BASE_PRETTIER_CONFIG = {
 };
 
 const TS_PRETTIER_CONFIG = _extends({}, BASE_PRETTIER_CONFIG, {
-  parser: 'babel'
+  parser: 'babel-ts'
 });
 
 const CSS_PRETTIER_CONFIG = _extends({}, BASE_PRETTIER_CONFIG, {
@@ -2005,16 +2005,22 @@ function saveIcon(name, text) {
   const width = /width="(\d+)"/.exec(svgText)[1];
   const height = /height="(\d+)"/.exec(svgText)[1];
   const component = `
-    import React, { FC } from 'react'
+    import React, { forwardRef } from 'react'
 
     import iconId from './${svgPath}'
     
-    const ${componentName}: FC<{className?: string}> = ({className}) => 
-    <svg width="${width}" height="${height}" className={className}>
-    <use xlinkHref={\`#\${iconId}\`} />
-  </svg>
+    type TProps = { 
+      className?: string 
+    }
+
+    const ${componentName} = forwardRef<SVGSVGElement, TProps>(
+      ({ className, ...props }, ref) => (
+        <svg ref={ref} width="${width}" height="${height}" className={className} {...props}>
+          <use xlinkHref={\`#\${iconId}\`} />
+        </svg>
+      )
+    )
     
-        
     export { ${componentName} }
 `;
   saveIconComponent(componentName, component);
