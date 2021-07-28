@@ -21,7 +21,7 @@ const BASE_PRETTIER_CONFIG = {
 
 const TS_PRETTIER_CONFIG = {
   ...BASE_PRETTIER_CONFIG,
-  parser: 'babel',
+  parser: 'babel-ts',
 }
 
 const CSS_PRETTIER_CONFIG = {

@@ -43,16 +43,22 @@ function saveIcon(name: string, text: string) {
   const height = /height="(\d+)"/.exec(svgText)![1]
 
   const component = `
-    import React, { FC } from 'react'
+    import React, { forwardRef } from 'react'
 
     import iconId from './${svgPath}'
     
-    const ${componentName}: FC<{className?: string}> = ({className}) => 
-    <svg width="${width}" height="${height}" className={className}>
-    <use xlinkHref={\`#\${iconId}\`} />
-  </svg>
+    type TProps = { 
+      className?: string 
+    }
+
+    const ${componentName} = forwardRef<SVGSVGElement, TProps>(
+      ({ className, ...props }, ref) => (
+        <svg ref={ref} width="${width}" height="${height}" className={className} {...props}>
+          <use xlinkHref={\`#\${iconId}\`} />
+        </svg>
+      )
+    )
     
-        
     export { ${componentName} }
 `
 
