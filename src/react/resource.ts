@@ -29,6 +29,8 @@ const CSS_PRETTIER_CONFIG = {
   parser: 'css',
 }
 
+const icons: string[] = []
+
 function initializeReactResource(config: Config) {
   const { outputDir, iconsDir, colorsDir, typographyDir } = config
 
@@ -72,6 +74,22 @@ function saveIconComponent(name: string, content: string) {
   const formattedContent = format(content, TS_PRETTIER_CONFIG)
 
   writeFile(join(ICONS_FOLDER, `${name}.tsx`), formattedContent)
+
+  icons.push(name)
 }
 
-export { initializeReactResource, saveColorTheme, saveFontsCss, saveIconComponent, saveIconSvg }
+function saveIconsIndex() {
+  icons.sort()
+
+  const content = icons.map((icon) => `export * from './${icon}'`).join('\n')
+  writeFile(join(ICONS_FOLDER, 'index.ts'), content)
+}
+
+export {
+  initializeReactResource,
+  saveColorTheme,
+  saveFontsCss,
+  saveIconComponent,
+  saveIconSvg,
+  saveIconsIndex,
+}

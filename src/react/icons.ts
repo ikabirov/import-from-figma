@@ -1,6 +1,6 @@
 import { Icons } from '../dsl'
 
-import { saveIconComponent, saveIconSvg } from './resource'
+import { saveIconComponent, saveIconsIndex, saveIconSvg } from './resource'
 
 const currentColor = 'black'
 const currentColorRegexp = new RegExp(currentColor, 'g')
@@ -68,6 +68,8 @@ function saveIcon(name: string, text: string) {
 
 async function writeIcons(icons: Icons) {
   Object.keys(icons).forEach((key) => saveIcon(key, icons[key]))
+
+  saveIconsIndex()
 }
 
 export { writeIcons }
