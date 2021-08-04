@@ -81,7 +81,7 @@ function saveIconComponent(name: string, content: string) {
 function saveIconsIndex() {
   icons.sort()
 
-  const content = icons.map((icon) => `export * from './${icon}'`).join('\n')
+  const content = icons.map((icon) => `export * from './${icon}'\n`).join('')
   writeFile(join(ICONS_FOLDER, 'index.ts'), content)
 }
 

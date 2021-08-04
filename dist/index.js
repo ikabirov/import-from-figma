@@ -1883,7 +1883,7 @@ function saveIconComponent(name, content) {
 
 function saveIconsIndex() {
   icons.sort();
-  const content = icons.map(icon => `export * from './${icon}'`).join('\n');
+  const content = icons.map(icon => `export * from './${icon}'\n`).join('');
   writeFile(path.join(ICONS_FOLDER, 'index.ts'), content);
 }
 
