@@ -17,7 +17,7 @@ function formatComponentName(name: string) {
 }
 
 function formatSvgPath(name: string) {
-  const formattedName = name.replace(/\s+/gi, '')
+  const formattedName = name.replace(/\s+/gi, '').replace(/:/gi, '_')
 
   return `svg/${formattedName}.svg`
 }
