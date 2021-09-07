@@ -1991,7 +1991,7 @@ function formatComponentName(name) {
 }
 
 function formatSvgPath(name) {
-  const formattedName = name.replace(/\s+/gi, '').replace(/[^a-z0-9-_/]/gi, '_');
+  const formattedName = name.replace(/\s+/gi, '').replace(/[^a-z0-9-_]/gi, '_');
   return `svg/${formattedName}.svg`;
 }
 
