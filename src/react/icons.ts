@@ -69,7 +69,7 @@ function saveIcon(name: string, text: string) {
 async function writeIcons(icons: Icons) {
   Object.keys(icons).forEach((key) => saveIcon(key, icons[key]))
 
-  saveIconsIndex()
+  // saveIconsIndex()
 }
 
 export { writeIcons }

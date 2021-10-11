@@ -1830,8 +1830,6 @@ const CSS_PRETTIER_CONFIG = _extends({}, BASE_PRETTIER_CONFIG, {
   parser: 'css'
 });
 
-const icons = [];
-
 function initializeReactResource(config) {
   const {
     outputDir,
@@ -1878,13 +1876,6 @@ function saveIconSvg(path$1, content) {
 function saveIconComponent(name, content) {
   const formattedContent = prettier.format(content, TS_PRETTIER_CONFIG);
   writeFile(path.join(ICONS_FOLDER, `${name}.tsx`), formattedContent);
-  icons.push(name);
-}
-
-function saveIconsIndex() {
-  icons.sort();
-  const content = icons.map(icon => `export * from './${icon}'\n`).join('');
-  writeFile(path.join(ICONS_FOLDER, 'index.ts'), content);
 }
 
 const OPACITY_PRECISION = 3;
@@ -2037,8 +2028,7 @@ function saveIcon(name, text) {
 }
 
 async function writeIcons(icons) {
-  Object.keys(icons).forEach(key => saveIcon(key, icons[key]));
-  saveIconsIndex();
+  Object.keys(icons).forEach(key => saveIcon(key, icons[key])); // saveIconsIndex()
 }
 
 function generateReactArtifacts(typographies, colors, icons) {
