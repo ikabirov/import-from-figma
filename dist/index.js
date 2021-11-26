@@ -1948,15 +1948,20 @@ async function writeColors(colors) {
   }
 }
 
+const fontWeightReloads = {
+  'Inter-SemiBold': 600
+};
+
 function formatFont(fontNode) {
-  const {
+  let {
     italic,
     fontWeight,
     fontSize,
     lineHeightPx,
-    fontFamily
+    fontFamily,
+    fontPostScriptName
   } = fontNode;
-  return [italic ? 'italic' : null, fontWeight, `${fontSize / 16}rem/${lineHeightPx / 16}rem`, `'${fontFamily}'`].filter(v => v).join(' ');
+  return [italic ? 'italic' : null, fontWeightReloads[fontPostScriptName] || fontWeight, `${fontSize / 16}rem/${lineHeightPx / 16}rem`, `'${fontFamily}'`].filter(v => v).join(' ');
 }
 
 async function writeFonts(typographies) {

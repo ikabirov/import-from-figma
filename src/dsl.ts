@@ -6,7 +6,7 @@ const QUEUE_SIZE = 4
 
 type Typography = Pick<
   TypeStyle,
-  'italic' | 'fontWeight' | 'fontSize' | 'lineHeightPx' | 'fontFamily'
+  'italic' | 'fontWeight' | 'fontSize' | 'lineHeightPx' | 'fontFamily' | 'fontPostScriptName'
 > & { name: string }
 
 type ColorData = {

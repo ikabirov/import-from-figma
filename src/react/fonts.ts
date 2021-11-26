@@ -1,11 +1,16 @@
 import { Typography } from '../dsl'
 import { saveFontsCss } from './resource'
 
+const fontWeightReloads: Record<string, number> = {
+  'Inter-SemiBold': 600,
+}
+
 function formatFont(fontNode: Typography) {
-  const { italic, fontWeight, fontSize, lineHeightPx, fontFamily } = fontNode
+  let { italic, fontWeight, fontSize, lineHeightPx, fontFamily, fontPostScriptName } = fontNode
+
   return [
     italic ? 'italic' : null,
-    fontWeight,
+    fontWeightReloads[fontPostScriptName] || fontWeight,
     `${fontSize / 16}rem/${lineHeightPx / 16}rem`,
     `'${fontFamily}'`,
   ]

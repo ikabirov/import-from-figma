@@ -1,5 +1,5 @@
 import { Color, FileResponse, TypeStyle } from 'figma-js';
-declare type Typography = Pick<TypeStyle, 'italic' | 'fontWeight' | 'fontSize' | 'lineHeightPx' | 'fontFamily'> & {
+declare type Typography = Pick<TypeStyle, 'italic' | 'fontWeight' | 'fontSize' | 'lineHeightPx' | 'fontFamily' | 'fontPostScriptName'> & {
     name: string;
 };
 declare type ColorData = {
