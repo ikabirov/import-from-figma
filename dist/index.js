@@ -1907,7 +1907,7 @@ function parseColorName(fullName) {
   };
 }
 
-async function writeColors(colors) {
+async function writeColors(colors, getCssRootSelector) {
   const themes = {
     dark: [],
     light: []
@@ -1943,7 +1943,7 @@ async function writeColors(colors) {
 
       return `--color-${fill.name}: ${formatColor(fill.color, fill.opacity)};`;
     }).join('\n\t');
-    const content = `:root { ${colorsCss} }`;
+    const content = `:root${getCssRootSelector ? getCssRootSelector(theme) : ''} { ${colorsCss} }`;
     saveColorTheme(theme, content);
   }
 }
@@ -2036,13 +2036,13 @@ async function writeIcons(icons) {
   Object.keys(icons).forEach(key => saveIcon(key, icons[key])); // saveIconsIndex()
 }
 
-function generateReactArtifacts(typographies, colors, icons) {
+function generateReactArtifacts(typographies, colors, icons, getCssRootSelector) {
   if (typographies) {
     writeFonts(typographies);
   }
 
   if (colors) {
-    writeColors(colors);
+    writeColors(colors, getCssRootSelector);
   }
 
   if (icons) {
@@ -2062,7 +2062,7 @@ async function importFromFigma(config) {
     colors,
     icons
   } = await generateDSL(data);
-  if (config.exportType == 'react') generateReactArtifacts(typography, colors, icons); // if (config.exportType == 'flutter') generateReactArtifacts(typography, colors, icons);
+  if (config.exportType == 'react') generateReactArtifacts(typography, colors, icons, config.getCssRootSelector); // if (config.exportType == 'flutter') generateReactArtifacts(typography, colors, icons);
 }
 
 exports.importFromFigma = importFromFigma;

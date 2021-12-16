@@ -4,5 +4,5 @@ declare type ColorData = {
     color: Color;
     opacity: number;
 };
-declare function writeColors(colors: ColorData[]): Promise<void>;
+declare function writeColors(colors: ColorData[], getCssRootSelector?: (theme: string) => string): Promise<void>;
 export { writeColors };

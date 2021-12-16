@@ -42,7 +42,7 @@ function parseColorName(fullName: string) {
   }
 }
 
-async function writeColors(colors: ColorData[]) {
+async function writeColors(colors: ColorData[], getCssRootSelector?: (theme: string) => string) {
   const themes: Record<string, ColorData[]> = {
     dark: [],
     light: [],
@@ -79,7 +79,7 @@ async function writeColors(colors: ColorData[]) {
       })
       .join('\n\t')
 
-    const content = `:root { ${colorsCss} }`
+    const content = `:root${getCssRootSelector ? getCssRootSelector(theme) : ''} { ${colorsCss} }`
 
     saveColorTheme(theme, content)
   }

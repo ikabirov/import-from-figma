@@ -8,4 +8,5 @@ importFromFigma({
   projectId: process.env.DOCUMENT_ID!,
   exportType: 'react',
   outputDir: './generated',
+  getCssRootSelector: (theme) => `[data-theme='${theme}']`,
 })

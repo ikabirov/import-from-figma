@@ -14,7 +14,8 @@ async function importFromFigma(config: Config) {
   const { data } = await loadRoot()
   const { typography, colors, icons } = await generateDSL(data)
 
-  if (config.exportType == 'react') generateReactArtifacts(typography, colors, icons)
+  if (config.exportType == 'react')
+    generateReactArtifacts(typography, colors, icons, config.getCssRootSelector)
   // if (config.exportType == 'flutter') generateReactArtifacts(typography, colors, icons);
 }
 

@@ -3,5 +3,8 @@
     "module": "CommonJS",
     "noEmit": true,
     "strict": true
+  },
+  "ts-node": {
+    "transpileOnly": true
   }
 }
