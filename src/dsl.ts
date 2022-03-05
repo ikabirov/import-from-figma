@@ -21,14 +21,15 @@ type IconSVGContent = string
 type Icons = Record<IconName, IconSVGContent>
 
 async function generateDSL(rawData: FileResponse) {
-  const typographyPage = rawData.document.children.find((page) => page.name === 'Typography')
-  const colorsPage = rawData.document.children.find((page) => page.name === 'Colors')
-  const iconsPage = rawData.document.children.find((page) => page.name === 'Icons')
+  const typographyPage = rawData.document.children.find((page) => page.name === 'Screens')
+  const colorsPage = rawData.document //.children.find((page) => page.name === 'Colors')
+  // const iconsPage = rawData.document.children.find((page) => page.name === 'Icons')
 
   return {
     typography: typographyPage ? await parseTypography(typographyPage.id) : undefined,
     colors: colorsPage ? await parseColors(colorsPage.id) : undefined,
-    icons: iconsPage ? await parseIcons(iconsPage.id) : undefined,
+    // icons: iconsPage ? await parseIcons(iconsPage.id) : undefined,
+    icons: undefined,
   }
 }
 
@@ -48,6 +49,7 @@ async function parseTypography(pageId: string): Promise<Typography[] | undefined
 
   const textNodes: Typography[] = (await loadNodes(textKeys))
     .map((v) => v!.document)
+    .filter((v) => v.visible !== false)
     .map((v) => ({
       name: v.name,
       ...(v as Text).style,
@@ -70,6 +72,7 @@ async function parseColors(pageId: string): Promise<ColorData[] | undefined> {
 
   const colors: ColorData[] = nodes
     .map((node) => node?.document as Rectangle)
+    .filter((v) => v.visible !== false)
     .map((node) => ({
       name: node.name,
       color: node.fills[0].color!,

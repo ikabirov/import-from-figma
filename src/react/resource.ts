@@ -35,10 +35,8 @@ function initializeReactResource(config: Config) {
   const { outputDir, iconsDir, colorsDir, typographyDir } = config
 
   BASE_FOLDER = outputDir
-  FONTS_FOLDER = typographyDir
-    ? join(BASE_FOLDER, typographyDir)
-    : join(BASE_FOLDER, 'css', 'fonts')
-  COLORS_FOLDER = colorsDir ? join(BASE_FOLDER, colorsDir) : join(BASE_FOLDER, 'css', 'colors')
+  FONTS_FOLDER = typographyDir ? join(BASE_FOLDER, typographyDir) : join(BASE_FOLDER, 'styles')
+  COLORS_FOLDER = colorsDir ? join(BASE_FOLDER, colorsDir) : join(BASE_FOLDER, 'styles')
   ICONS_FOLDER = iconsDir ? join(BASE_FOLDER, iconsDir) : join(BASE_FOLDER, 'icons')
 
   rmdirSync(FONTS_FOLDER, { recursive: true })
@@ -55,15 +53,15 @@ function writeFile(path: string, content: string) {
 }
 
 function saveColorTheme(name: string, content: string) {
-  const formattedContent = format(content, CSS_PRETTIER_CONFIG)
+  const formattedContent = format(content, TS_PRETTIER_CONFIG)
 
-  writeFile(join(COLORS_FOLDER, `${name}.css`), formattedContent)
+  writeFile(join(COLORS_FOLDER, `${name}.ts`), formattedContent)
 }
 
 function saveFontsCss(content: string) {
-  const formattedContent = format(content, CSS_PRETTIER_CONFIG)
+  const formattedContent = format(content, TS_PRETTIER_CONFIG)
 
-  writeFile(join(FONTS_FOLDER, 'common.css'), formattedContent)
+  writeFile(join(FONTS_FOLDER, 'fonts.ts'), formattedContent)
 }
 
 function saveIconSvg(path: string, content: string) {

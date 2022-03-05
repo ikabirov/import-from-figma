@@ -1,4 +1,5 @@
 import { Color } from 'figma-js'
+import { sortByStringField } from './fonts'
 
 import { saveColorTheme } from './resource'
 
@@ -28,17 +29,13 @@ function formatColor(color: Color, opacity: number) {
 }
 
 function parseColorName(fullName: string) {
-  const themeSeparatorIndex = fullName.indexOf('/')
-  const theme = fullName.slice(0, themeSeparatorIndex).trim().toLocaleLowerCase()
   const name = fullName
-    .slice(themeSeparatorIndex + 1)
     .trim()
-    .toLocaleLowerCase()
-    .replace(/[ /%()+#,".]+/g, '-')
+    .replace(/[ /%()+#,".-]+/g, '_')
+    .replace(/^\d.*/, (name) => `'${name}'`)
 
   return {
-    theme,
-    name,
+    name: fullName,
   }
 }
 
@@ -48,41 +45,38 @@ async function writeColors(colors: ColorData[], getCssRootSelector?: (theme: str
     light: [],
   }
 
-  colors.forEach((color) => {
-    const { theme, name } = parseColorName(color.name)
+  const themeColors: ColorData[] = []
 
-    if (themes[theme]) {
-      themes[theme].push({
-        ...color,
-        name,
-      })
-    } else {
-      console.log(`Error: incorrect color name '${color.name}'`)
-    }
+  colors.forEach((color) => {
+    const { name } = parseColorName(color.name)
+
+    themeColors.push({
+      ...color,
+      name,
+    })
   })
 
-  for (const theme of Object.keys(themes)) {
-    const colorsCss = themes[theme]
-      .filter((fill) => {
-        if (fill.name.match(/[а-яА-Я]+/)) {
-          console.log('incorrect color name: ' + fill.name)
-          return false
-        }
-        return true
-      })
-      .map((fill) => {
-        if (!fill.color) {
-          console.log(`unsupported color: [${theme}] ${fill.name}`)
-          return ''
-        }
-        return `--color-${fill.name}: ${formatColor(fill.color, fill.opacity)};`
-      })
-      .join('\n\t')
+  const colorsCss = themeColors
+    .filter((fill) => {
+      if (fill.name.match(/[а-яА-Я]+/)) {
+        console.log('incorrect color name: ' + fill.name)
+        return false
+      }
+      return true
+    })
+    .sort((a, b) => sortByStringField(a, b, 'name'))
+    .map((fill) => {
+      if (!fill.color) {
+        console.log(`unsupported color: ${fill.name}`)
+        return ''
+      }
+      return `'${fill.name}': '${formatColor(fill.color, fill.opacity)}',`
+    })
+    .join('\n\t')
 
-    const content = `:root${getCssRootSelector ? getCssRootSelector(theme) : ''} { ${colorsCss} }`
+  const content = `export const Colors = { ${colorsCss} }`
 
-    saveColorTheme(theme, content)
-  }
+  saveColorTheme('colors', content)
 }
 
 export { writeColors }
