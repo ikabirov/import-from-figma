@@ -48,7 +48,7 @@ async function writeFonts(typographies: Typography[]) {
   const content = `
 import { StyleSheet } from 'react-native'; 
 
-export const styles = StyleSheet.create({
+export const fontStyles = StyleSheet.create({
 ${variablesText} 
 });`
 
