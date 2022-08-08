@@ -1864,6 +1864,11 @@ function saveColorTheme(name, content) {
   writeFile(path.join(COLORS_FOLDER, `${name}.css`), formattedContent);
 }
 
+function saveTailwindColors(content) {
+  const formattedContent = prettier.format(content, TS_PRETTIER_CONFIG);
+  writeFile(path.join(BASE_FOLDER, 'tailwind.colors.js'), formattedContent);
+}
+
 function saveFontsCss(content) {
   const formattedContent = prettier.format(content, CSS_PRETTIER_CONFIG);
   writeFile(path.join(FONTS_FOLDER, 'common.css'), formattedContent);
@@ -1926,6 +1931,7 @@ async function writeColors(colors, getCssRootSelector) {
       console.log(`Error: incorrect color name '${color.name}'`);
     }
   });
+  const tailwindColors = {};
 
   for (const theme of Object.keys(themes)) {
     const colorsCss = themes[theme].filter(fill => {
@@ -1941,11 +1947,15 @@ async function writeColors(colors, getCssRootSelector) {
         return '';
       }
 
-      return `--color-${fill.name}: ${formatColor(fill.color, fill.opacity)};`;
+      const colorName = `--color-${fill.name}`;
+      tailwindColors[fill.name] = `var(${colorName})`;
+      return `${colorName}: ${formatColor(fill.color, fill.opacity)};`;
     }).join('\n\t');
     const content = `:root${getCssRootSelector ? getCssRootSelector(theme) : ''} { ${colorsCss} }`;
     saveColorTheme(theme, content);
   }
+
+  saveTailwindColors(`module.exports = ${JSON.stringify(tailwindColors)}`);
 }
 
 const fontWeightReloads = {

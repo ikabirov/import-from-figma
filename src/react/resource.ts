@@ -60,6 +60,12 @@ function saveColorTheme(name: string, content: string) {
   writeFile(join(COLORS_FOLDER, `${name}.css`), formattedContent)
 }
 
+function saveTailwindColors(content: string) {
+  const formattedContent = format(content, TS_PRETTIER_CONFIG)
+
+  writeFile(join(BASE_FOLDER, 'tailwind.colors.js'), formattedContent)
+}
+
 function saveFontsCss(content: string) {
   const formattedContent = format(content, CSS_PRETTIER_CONFIG)
 
@@ -92,4 +98,5 @@ export {
   saveIconComponent,
   saveIconSvg,
   saveIconsIndex,
+  saveTailwindColors,
 }

@@ -1,6 +1,6 @@
 import { Color } from 'figma-js'
 
-import { saveColorTheme } from './resource'
+import { saveColorTheme, saveTailwindColors } from './resource'
 
 type ColorData = {
   name: string
@@ -61,6 +61,8 @@ async function writeColors(colors: ColorData[], getCssRootSelector?: (theme: str
     }
   })
 
+  const tailwindColors: Record<string, string> = {}
+
   for (const theme of Object.keys(themes)) {
     const colorsCss = themes[theme]
       .filter((fill) => {
@@ -75,7 +77,10 @@ async function writeColors(colors: ColorData[], getCssRootSelector?: (theme: str
           console.log(`unsupported color: [${theme}] ${fill.name}`)
           return ''
         }
-        return `--color-${fill.name}: ${formatColor(fill.color, fill.opacity)};`
+
+        const colorName = `--color-${fill.name}`
+        tailwindColors[fill.name] = `var(${colorName})`
+        return `${colorName}: ${formatColor(fill.color, fill.opacity)};`
       })
       .join('\n\t')
 
@@ -83,6 +88,8 @@ async function writeColors(colors: ColorData[], getCssRootSelector?: (theme: str
 
     saveColorTheme(theme, content)
   }
+
+  saveTailwindColors(`module.exports = ${JSON.stringify(tailwindColors)}`)
 }
 
 export { writeColors }
