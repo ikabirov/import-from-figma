@@ -1874,6 +1874,11 @@ function saveFontsCss(content) {
   writeFile(path.join(FONTS_FOLDER, 'common.css'), formattedContent);
 }
 
+function saveTailwindFonts(content) {
+  const formattedContent = prettier.format(content, TS_PRETTIER_CONFIG);
+  writeFile(path.join(BASE_FOLDER, 'tailwind.fonts.js'), formattedContent);
+}
+
 function saveIconSvg(path$1, content) {
   writeFile(path.join(ICONS_FOLDER, path$1), content);
 }
@@ -1975,6 +1980,7 @@ function formatFont(fontNode) {
 }
 
 async function writeFonts(typographies) {
+  const fonts = {};
   const variablesText = typographies.filter(node => {
     if (node.name.match(/[а-яА-Я]+/)) {
       console.log('incorrect font name: ' + node.name);
@@ -1982,9 +1988,15 @@ async function writeFonts(typographies) {
     }
 
     return true;
-  }).map(node => `--font-${node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-')}: ${formatFont(node)};`).join('\n\t');
+  }).map(node => {
+    const fontName = node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-');
+    const varName = `--font-${fontName}`;
+    fonts[`.font-${fontName}`] = `var(${varName})`;
+    return `${varName}: ${formatFont(node)};`;
+  }).join('\n\t');
   const content = `:root { ${variablesText} }`;
   saveFontsCss(content);
+  saveTailwindFonts(`module.exports = ${JSON.stringify(fonts)}`);
 }
 
 const currentColor = 'black';

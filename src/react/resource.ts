@@ -72,6 +72,12 @@ function saveFontsCss(content: string) {
   writeFile(join(FONTS_FOLDER, 'common.css'), formattedContent)
 }
 
+function saveTailwindFonts(content: string) {
+  const formattedContent = format(content, TS_PRETTIER_CONFIG)
+
+  writeFile(join(BASE_FOLDER, 'tailwind.fonts.js'), formattedContent)
+}
+
 function saveIconSvg(path: string, content: string) {
   writeFile(join(ICONS_FOLDER, path), content)
 }
@@ -99,4 +105,5 @@ export {
   saveIconSvg,
   saveIconsIndex,
   saveTailwindColors,
+  saveTailwindFonts,
 }

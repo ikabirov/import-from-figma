@@ -1,5 +1,5 @@
 import { Typography } from '../dsl'
-import { saveFontsCss } from './resource'
+import { saveFontsCss, saveTailwindFonts } from './resource'
 
 const fontWeightReloads: Record<string, number> = {
   'Inter-SemiBold': 600,
@@ -19,6 +19,8 @@ function formatFont(fontNode: Typography) {
 }
 
 async function writeFonts(typographies: Typography[]) {
+  const fonts: Record<string, string> = {}
+
   const variablesText = typographies
     .filter((node) => {
       if (node.name.match(/[а-яА-Я]+/)) {
@@ -27,17 +29,18 @@ async function writeFonts(typographies: Typography[]) {
       }
       return true
     })
-    .map(
-      (node) =>
-        `--font-${node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-')}: ${formatFont(
-          node
-        )};`
-    )
+    .map((node) => {
+      const fontName = node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-')
+      const varName = `--font-${fontName}`
+      fonts[`.font-${fontName}`] = `var(${varName})`
+      return `${varName}: ${formatFont(node)};`
+    })
     .join('\n\t')
 
   const content = `:root { ${variablesText} }`
 
   saveFontsCss(content)
+  saveTailwindFonts(`module.exports = ${JSON.stringify(fonts)}`)
 }
 
 export { writeFonts }
