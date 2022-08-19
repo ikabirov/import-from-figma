@@ -41,9 +41,17 @@ function initializeReactResource(config: Config) {
   COLORS_FOLDER = colorsDir ? join(BASE_FOLDER, colorsDir) : join(BASE_FOLDER, 'css', 'colors')
   ICONS_FOLDER = iconsDir ? join(BASE_FOLDER, iconsDir) : join(BASE_FOLDER, 'icons')
 
-  rmdirSync(FONTS_FOLDER, { recursive: true })
-  rmdirSync(COLORS_FOLDER, { recursive: true })
-  rmdirSync(ICONS_FOLDER, { recursive: true })
+  try {
+    rmdirSync(FONTS_FOLDER, { recursive: true })
+  } catch (e) {}
+  
+  try {
+    rmdirSync(COLORS_FOLDER, { recursive: true })
+  } catch (e) {}
+
+  try {
+    rmdirSync(ICONS_FOLDER, { recursive: true })
+  } catch (e) {}
 }
 
 function writeFile(path: string, content: string) {

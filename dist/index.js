@@ -1719,9 +1719,9 @@ function loadSvgUrls(ids) {
 const QUEUE_SIZE = 4;
 
 async function generateDSL(rawData) {
-  const typographyPage = rawData.document.children.find(page => page.name === 'Typography');
-  const colorsPage = rawData.document.children.find(page => page.name === 'Colors');
-  const iconsPage = rawData.document.children.find(page => page.name === 'Icons');
+  const typographyPage = rawData.document.children.find(page => page.name.includes('Typography'));
+  const colorsPage = rawData.document.children.find(page => page.name.includes('Colors'));
+  const iconsPage = rawData.document.children.find(page => page.name.includes('Icons'));
   return {
     typography: typographyPage ? await parseTypography(typographyPage.id) : undefined,
     colors: colorsPage ? await parseColors(colorsPage.id) : undefined,
@@ -1841,15 +1841,24 @@ function initializeReactResource(config) {
   FONTS_FOLDER = typographyDir ? path.join(BASE_FOLDER, typographyDir) : path.join(BASE_FOLDER, 'css', 'fonts');
   COLORS_FOLDER = colorsDir ? path.join(BASE_FOLDER, colorsDir) : path.join(BASE_FOLDER, 'css', 'colors');
   ICONS_FOLDER = iconsDir ? path.join(BASE_FOLDER, iconsDir) : path.join(BASE_FOLDER, 'icons');
-  fs.rmdirSync(FONTS_FOLDER, {
-    recursive: true
-  });
-  fs.rmdirSync(COLORS_FOLDER, {
-    recursive: true
-  });
-  fs.rmdirSync(ICONS_FOLDER, {
-    recursive: true
-  });
+
+  try {
+    fs.rmdirSync(FONTS_FOLDER, {
+      recursive: true
+    });
+  } catch (e) {}
+
+  try {
+    fs.rmdirSync(COLORS_FOLDER, {
+      recursive: true
+    });
+  } catch (e) {}
+
+  try {
+    fs.rmdirSync(ICONS_FOLDER, {
+      recursive: true
+    });
+  } catch (e) {}
 }
 
 function writeFile(path$1, content) {

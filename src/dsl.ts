@@ -21,9 +21,9 @@ type IconSVGContent = string
 type Icons = Record<IconName, IconSVGContent>
 
 async function generateDSL(rawData: FileResponse) {
-  const typographyPage = rawData.document.children.find((page) => page.name === 'Typography')
-  const colorsPage = rawData.document.children.find((page) => page.name === 'Colors')
-  const iconsPage = rawData.document.children.find((page) => page.name === 'Icons')
+  const typographyPage = rawData.document.children.find((page) => page.name.includes('Typography'))
+  const colorsPage = rawData.document.children.find((page) => page.name.includes('Colors'))
+  const iconsPage = rawData.document.children.find((page) => page.name.includes('Icons'))
 
   return {
     typography: typographyPage ? await parseTypography(typographyPage.id) : undefined,
