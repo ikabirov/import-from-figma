@@ -2000,7 +2000,9 @@ async function writeFonts(typographies) {
   }).map(node => {
     const fontName = node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-');
     const varName = `--font-${fontName}`;
-    fonts[`.font-${fontName}`] = `var(${varName})`;
+    fonts[`.font-${fontName}`] = {
+      font: `var(${varName})`
+    };
     return `${varName}: ${formatFont(node)};`;
   }).join('\n\t');
   const content = `:root { ${variablesText} }`;

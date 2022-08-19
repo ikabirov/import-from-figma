@@ -19,7 +19,7 @@ function formatFont(fontNode: Typography) {
 }
 
 async function writeFonts(typographies: Typography[]) {
-  const fonts: Record<string, string> = {}
+  const fonts: Record<string, any> = {}
 
   const variablesText = typographies
     .filter((node) => {
@@ -32,7 +32,7 @@ async function writeFonts(typographies: Typography[]) {
     .map((node) => {
       const fontName = node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-')
       const varName = `--font-${fontName}`
-      fonts[`.font-${fontName}`] = `var(${varName})`
+      fonts[`.font-${fontName}`] = { font: `var(${varName})` }
       return `${varName}: ${formatFont(node)};`
     })
     .join('\n\t')
