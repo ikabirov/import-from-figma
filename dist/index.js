@@ -1917,58 +1917,44 @@ function formatColor(color, opacity) {
 }
 
 function parseColorName(fullName) {
-  const themeSeparatorIndex = fullName.indexOf('/');
-  const theme = fullName.slice(0, themeSeparatorIndex).trim().toLocaleLowerCase();
-  const name = fullName.slice(themeSeparatorIndex + 1).trim().toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-');
+  const name = fullName.trim().toLocaleLowerCase().replace(/[ /%()+&#,".:]+/g, '-').replace(/-+/g, '-');
   return {
-    theme,
+    theme: 'default',
     name
   };
 }
 
 async function writeColors(colors, getCssRootSelector) {
-  const themes = {
-    dark: [],
-    light: []
-  };
+  const data = [];
   colors.forEach(color => {
     const {
       theme,
       name
     } = parseColorName(color.name);
-
-    if (themes[theme]) {
-      themes[theme].push(_extends({}, color, {
-        name
-      }));
-    } else {
-      console.log(`Error: incorrect color name '${color.name}'`);
-    }
+    data.push(_extends({}, color, {
+      name
+    }));
   });
   const tailwindColors = {};
+  const colorsCss = data.filter(fill => {
+    if (fill.name.match(/[а-яА-Я]+/)) {
+      console.log('incorrect color name: ' + fill.name);
+      return false;
+    }
 
-  for (const theme of Object.keys(themes)) {
-    const colorsCss = themes[theme].filter(fill => {
-      if (fill.name.match(/[а-яА-Я]+/)) {
-        console.log('incorrect color name: ' + fill.name);
-        return false;
-      }
+    return true;
+  }).map(fill => {
+    if (!fill.color) {
+      console.log(`unsupported color: ${fill.name}`);
+      return '';
+    }
 
-      return true;
-    }).map(fill => {
-      if (!fill.color) {
-        console.log(`unsupported color: [${theme}] ${fill.name}`);
-        return '';
-      }
-
-      const colorName = `--color-${fill.name}`;
-      tailwindColors[fill.name] = `var(${colorName})`;
-      return `${colorName}: ${formatColor(fill.color, fill.opacity)};`;
-    }).join('\n\t');
-    const content = `:root${getCssRootSelector ? getCssRootSelector(theme) : ''} { ${colorsCss} }`;
-    saveColorTheme(theme, content);
-  }
-
+    const colorName = `--color-${fill.name}`;
+    tailwindColors[fill.name] = `var(${colorName})`;
+    return `${colorName}: ${formatColor(fill.color, fill.opacity)};`;
+  }).join('\n\t');
+  const content = `:root { ${colorsCss} }`;
+  saveColorTheme('colors', content);
   saveTailwindColors(`module.exports = ${JSON.stringify(tailwindColors)}`);
 }
 
@@ -2075,7 +2061,7 @@ function generateReactArtifacts(typographies, colors, icons, getCssRootSelector)
   }
 
   if (colors) {
-    writeColors(colors, getCssRootSelector);
+    writeColors(colors);
   }
 
   if (icons) {
@@ -2095,7 +2081,7 @@ async function importFromFigma(config) {
     colors,
     icons
   } = await generateDSL(data);
-  if (config.exportType == 'react') generateReactArtifacts(typography, colors, icons, config.getCssRootSelector); // if (config.exportType == 'flutter') generateReactArtifacts(typography, colors, icons);
+  if (config.exportType == 'react') generateReactArtifacts(typography, colors, icons); // if (config.exportType == 'flutter') generateReactArtifacts(typography, colors, icons);
 }
 
 exports.importFromFigma = importFromFigma;

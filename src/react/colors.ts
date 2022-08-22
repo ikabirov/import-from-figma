@@ -28,66 +28,54 @@ function formatColor(color: Color, opacity: number) {
 }
 
 function parseColorName(fullName: string) {
-  const themeSeparatorIndex = fullName.indexOf('/')
-  const theme = fullName.slice(0, themeSeparatorIndex).trim().toLocaleLowerCase()
   const name = fullName
-    .slice(themeSeparatorIndex + 1)
     .trim()
     .toLocaleLowerCase()
-    .replace(/[ /%()+#,".]+/g, '-')
+    .replace(/[ /%()+&#,".:]+/g, '-')
+    .replace(/-+/g, '-')
 
   return {
-    theme,
+    theme: 'default',
     name,
   }
 }
 
 async function writeColors(colors: ColorData[], getCssRootSelector?: (theme: string) => string) {
-  const themes: Record<string, ColorData[]> = {
-    dark: [],
-    light: [],
-  }
-
+  const data: ColorData[] = []
   colors.forEach((color) => {
     const { theme, name } = parseColorName(color.name)
 
-    if (themes[theme]) {
-      themes[theme].push({
-        ...color,
-        name,
-      })
-    } else {
-      console.log(`Error: incorrect color name '${color.name}'`)
-    }
+    data.push({
+      ...color,
+      name,
+    })
   })
 
   const tailwindColors: Record<string, string> = {}
 
-  for (const theme of Object.keys(themes)) {
-    const colorsCss = themes[theme]
-      .filter((fill) => {
-        if (fill.name.match(/[а-яА-Я]+/)) {
-          console.log('incorrect color name: ' + fill.name)
-          return false
-        }
-        return true
-      })
-      .map((fill) => {
-        if (!fill.color) {
-          console.log(`unsupported color: [${theme}] ${fill.name}`)
-          return ''
-        }
+  const colorsCss = data
+    .filter((fill) => {
+      if (fill.name.match(/[а-яА-Я]+/)) {
+        console.log('incorrect color name: ' + fill.name)
+        return false
+      }
+      return true
+    })
+    .map((fill) => {
+      if (!fill.color) {
+        console.log(`unsupported color: ${fill.name}`)
+        return ''
+      }
 
-        const colorName = `--color-${fill.name}`
-        tailwindColors[fill.name] = `var(${colorName})`
-        return `${colorName}: ${formatColor(fill.color, fill.opacity)};`
-      })
-      .join('\n\t')
+      const colorName = `--color-${fill.name}`
+      tailwindColors[fill.name] = `var(${colorName})`
+      return `${colorName}: ${formatColor(fill.color, fill.opacity)};`
+    })
+    .join('\n\t')
 
-    const content = `:root${getCssRootSelector ? getCssRootSelector(theme) : ''} { ${colorsCss} }`
+  const content = `:root { ${colorsCss} }`
 
-    saveColorTheme(theme, content)
-  }
+  saveColorTheme('colors', content)
 
   saveTailwindColors(`module.exports = ${JSON.stringify(tailwindColors)}`)
 }
