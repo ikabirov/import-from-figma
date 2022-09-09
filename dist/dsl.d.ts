@@ -10,7 +10,7 @@ declare type ColorData = {
 declare type IconName = string;
 declare type IconSVGContent = string;
 declare type Icons = Record<IconName, IconSVGContent>;
-declare function generateDSL(rawData: FileResponse): Promise<{
+declare function generateDSL(rawData: FileResponse, skipIcons?: boolean): Promise<{
     typography: Typography[] | undefined;
     colors: ColorData[] | undefined;
     icons: Icons | undefined;

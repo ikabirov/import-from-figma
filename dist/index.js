@@ -1718,10 +1718,10 @@ function loadSvgUrls(ids) {
 
 const QUEUE_SIZE = 4;
 
-async function generateDSL(rawData) {
+async function generateDSL(rawData, skipIcons) {
   const typographyPage = rawData.document.children.find(page => page.name.includes('Typography'));
   const colorsPage = rawData.document.children.find(page => page.name.includes('Colors'));
-  const iconsPage = rawData.document.children.find(page => page.name.includes('Icons'));
+  const iconsPage = skipIcons ? null : rawData.document.children.find(page => page.name.includes('Icons'));
   return {
     typography: typographyPage ? await parseTypography(typographyPage.id) : undefined,
     colors: colorsPage ? await parseColors(colorsPage.id) : undefined,
@@ -1854,11 +1854,13 @@ function initializeReactResource(config) {
     });
   } catch (e) {}
 
-  try {
-    fs.rmdirSync(ICONS_FOLDER, {
-      recursive: true
-    });
-  } catch (e) {}
+  if (!config.skipIcons) {
+    try {
+      fs.rmdirSync(ICONS_FOLDER, {
+        recursive: true
+      });
+    } catch (e) {}
+  }
 }
 
 function writeFile(path$1, content) {
@@ -2094,7 +2096,7 @@ async function importFromFigma(config) {
     typography,
     colors,
     icons
-  } = await generateDSL(data);
+  } = await generateDSL(data, config.skipIcons);
   if (config.exportType == 'react') generateReactArtifacts(typography, colors, icons, config.getCssRootSelector); // if (config.exportType == 'flutter') generateReactArtifacts(typography, colors, icons);
 }
 

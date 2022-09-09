@@ -6,5 +6,6 @@ export type Config = {
   iconsDir?: string
   colorsDir?: string
   typographyDir?: string
+  skipIcons?: boolean
   getCssRootSelector?: (theme: string) => string
 }

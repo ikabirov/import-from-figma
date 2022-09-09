@@ -9,4 +9,5 @@ importFromFigma({
   exportType: 'react',
   outputDir: './generated',
   getCssRootSelector: (theme) => `[data-theme='${theme}']`,
+  skipIcons: process.env.SKIP_ICONS == '1',
 })
