@@ -2013,8 +2013,10 @@ async function writeFonts(typographies, config) {
     }
 
     return true;
-  }).sort((a, b) => a.name < b.name ? -1 : 1).map(node => {
-    const fontName = node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-');
+  }).map(node => _extends({}, node, {
+    name: node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-')
+  })).sort((a, b) => a.name < b.name ? -1 : 1).map(node => {
+    const fontName = node.name;
     const varName = `--font-${fontName}`;
     fonts[`.font-${fontName}`] = {
       font: config.generateCss ? `var(${varName})` : `${formatFont(node)}`
