@@ -82,6 +82,7 @@ async function writeColors(colors: ColorData[], config: Config) {
         }
         return true
       })
+      .sort((a, b) => (a.name < b.name ? -1 : 1))
       .map((fill) => {
         if (!fill.color) {
           console.log(`unsupported color: [${theme}] ${fill.name}`)

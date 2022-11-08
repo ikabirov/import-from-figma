@@ -30,6 +30,7 @@ async function writeFonts(typographies: Typography[], config: Config) {
       }
       return true
     })
+    .sort((a, b) => (a.name < b.name ? -1 : 1))
     .map((node) => {
       const fontName = node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-')
       const varName = `--font-${fontName}`

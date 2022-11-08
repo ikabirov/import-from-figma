@@ -1968,7 +1968,7 @@ async function writeColors(colors, config) {
       }
 
       return true;
-    }).map(fill => {
+    }).sort((a, b) => a.name < b.name ? -1 : 1).map(fill => {
       if (!fill.color) {
         console.log(`unsupported color: [${theme}] ${fill.name}`);
         return '';
@@ -2013,7 +2013,7 @@ async function writeFonts(typographies, config) {
     }
 
     return true;
-  }).map(node => {
+  }).sort((a, b) => a.name < b.name ? -1 : 1).map(node => {
     const fontName = node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-');
     const varName = `--font-${fontName}`;
     fonts[`.font-${fontName}`] = {
