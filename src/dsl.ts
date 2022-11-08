@@ -1,6 +1,7 @@
 import fetch from 'node-fetch'
 import { Color, FileResponse, TypeStyle, Text, Rectangle } from 'figma-js'
 import { loadNode, loadNodes, loadSvgUrls } from './loader'
+import { Config } from './config'
 
 const QUEUE_SIZE = 4
 
@@ -20,17 +21,13 @@ type IconSVGContent = string
 
 type Icons = Record<IconName, IconSVGContent>
 
-async function generateDSL(rawData: FileResponse, skipIcons?: boolean) {
-  const typographyPage = rawData.document.children.find((page) => page.name.includes('Typography'))
-  const colorsPage = rawData.document.children.find((page) => page.name.includes('Colors'))
-  const iconsPage = skipIcons
-    ? null
-    : rawData.document.children.find((page) => page.name.includes('Icons'))
+async function generateDSL(rawData: FileResponse, config: Config) {
+  const { typographyNodeId, colorsNodeId, iconsNodeId } = config.getNodesForExport(rawData.document)
 
   return {
-    typography: typographyPage ? await parseTypography(typographyPage.id) : undefined,
-    colors: colorsPage ? await parseColors(colorsPage.id) : undefined,
-    icons: iconsPage ? await parseIcons(iconsPage.id) : undefined,
+    typography: typographyNodeId ? await parseTypography(typographyNodeId) : undefined,
+    colors: colorsNodeId ? await parseColors(colorsNodeId) : undefined,
+    icons: iconsNodeId ? await parseIcons(iconsNodeId) : undefined,
   }
 }
 

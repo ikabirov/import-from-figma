@@ -1,4 +1,5 @@
 import { Color } from 'figma-js'
+import { Config } from '../config'
 
 import { saveColorTheme, saveTailwindColors } from './resource'
 
@@ -27,9 +28,11 @@ function formatColor(color: Color, opacity: number) {
   return `#${formatHex(r)}${formatHex(g)}${formatHex(b)}`
 }
 
-function parseColorName(fullName: string) {
-  const themeSeparatorIndex = fullName.indexOf('/')
-  const theme = fullName.slice(0, themeSeparatorIndex).trim().toLocaleLowerCase()
+function parseColorName(fullName: string, withTheme: boolean) {
+  const themeSeparatorIndex = withTheme ? fullName.indexOf('/') : -1
+  const theme = withTheme
+    ? fullName.slice(0, themeSeparatorIndex).trim().toLocaleLowerCase()
+    : 'default'
   const name = fullName
     .slice(themeSeparatorIndex + 1)
     .trim()
@@ -42,14 +45,21 @@ function parseColorName(fullName: string) {
   }
 }
 
-async function writeColors(colors: ColorData[], getCssRootSelector?: (theme: string) => string) {
-  const themes: Record<string, ColorData[]> = {
-    dark: [],
-    light: [],
+async function writeColors(colors: ColorData[], config: Config) {
+  const themes: Record<string, ColorData[]> = {}
+
+  const multipleThemes = !!config.themes?.length
+
+  if (multipleThemes) {
+    config.themes?.forEach((theme) => {
+      themes[theme] = []
+    })
+  } else {
+    themes['default'] = []
   }
 
   colors.forEach((color) => {
-    const { theme, name } = parseColorName(color.name)
+    const { theme, name } = parseColorName(color.name, multipleThemes)
 
     if (themes[theme]) {
       themes[theme].push({
@@ -79,14 +89,20 @@ async function writeColors(colors: ColorData[], getCssRootSelector?: (theme: str
         }
 
         const colorName = `--color-${fill.name}`
-        tailwindColors[fill.name] = `var(${colorName})`
+        tailwindColors[fill.name] = config.generateCss
+          ? `var(${colorName})`
+          : `${formatColor(fill.color, fill.opacity)}`
         return `${colorName}: ${formatColor(fill.color, fill.opacity)};`
       })
       .join('\n\t')
 
-    const content = `:root${getCssRootSelector ? getCssRootSelector(theme) : ''} { ${colorsCss} }`
+    if (config.generateCss) {
+      const content = `:root${
+        multipleThemes && config.getCssRootSelector ? config.getCssRootSelector(theme) : ''
+      } { ${colorsCss} }`
 
-    saveColorTheme(theme, content)
+      saveColorTheme(theme, content)
+    }
   }
 
   saveTailwindColors(`module.exports = ${JSON.stringify(tailwindColors)}`)

@@ -12,10 +12,9 @@ async function importFromFigma(config: Config) {
   initializeLoader(config)
 
   const { data } = await loadRoot()
-  const { typography, colors, icons } = await generateDSL(data, config.skipIcons)
+  const { typography, colors, icons } = await generateDSL(data, config)
 
-  if (config.exportType == 'react')
-    generateReactArtifacts(typography, colors, icons, config.getCssRootSelector)
+  if (config.exportType == 'react') generateReactArtifacts(config, typography, colors, icons)
   // if (config.exportType == 'flutter') generateReactArtifacts(typography, colors, icons);
 }
 

@@ -1,3 +1,5 @@
+import { Document } from 'figma-js'
+
 export type Config = {
   figmaToken: string
   projectId: string
@@ -6,6 +8,14 @@ export type Config = {
   iconsDir?: string
   colorsDir?: string
   typographyDir?: string
-  skipIcons?: boolean
+  themes?: string[]
   getCssRootSelector?: (theme: string) => string
+  generateCss?: boolean
+  getNodesForExport: (
+    document: Document
+  ) => {
+    typographyNodeId?: string
+    colorsNodeId?: string
+    iconsNodeId?: string
+  }
 }

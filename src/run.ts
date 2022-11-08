@@ -8,6 +8,18 @@ importFromFigma({
   projectId: process.env.DOCUMENT_ID!,
   exportType: 'react',
   outputDir: './generated',
+  themes: ['light', 'dark'],
   getCssRootSelector: (theme) => `[data-theme='${theme}']`,
-  skipIcons: process.env.SKIP_ICONS == '1',
+  generateCss: true,
+  getNodesForExport: (document) => {
+    const typographyPage = document.children.find((page) => page.name.includes('Typography'))
+    const colorsPage = document.children.find((page) => page.name.includes('Colors'))
+    const iconsPage = document.children.find((page) => page.name.includes('Icons'))
+
+    return {
+      typographyNodeId: typographyPage?.id,
+      colorsNodeId: colorsPage?.id,
+      iconsNodeId: iconsPage?.id,
+    }
+  },
 })

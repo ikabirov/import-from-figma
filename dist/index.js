@@ -1718,14 +1718,16 @@ function loadSvgUrls(ids) {
 
 const QUEUE_SIZE = 4;
 
-async function generateDSL(rawData, skipIcons) {
-  const typographyPage = rawData.document.children.find(page => page.name.includes('Typography'));
-  const colorsPage = rawData.document.children.find(page => page.name.includes('Colors'));
-  const iconsPage = skipIcons ? null : rawData.document.children.find(page => page.name.includes('Icons'));
+async function generateDSL(rawData, config) {
+  const {
+    typographyNodeId,
+    colorsNodeId,
+    iconsNodeId
+  } = config.getNodesForExport(rawData.document);
   return {
-    typography: typographyPage ? await parseTypography(typographyPage.id) : undefined,
-    colors: colorsPage ? await parseColors(colorsPage.id) : undefined,
-    icons: iconsPage ? await parseIcons(iconsPage.id) : undefined
+    typography: typographyNodeId ? await parseTypography(typographyNodeId) : undefined,
+    colors: colorsNodeId ? await parseColors(colorsNodeId) : undefined,
+    icons: iconsNodeId ? await parseIcons(iconsNodeId) : undefined
   };
 }
 
@@ -1918,9 +1920,9 @@ function formatColor(color, opacity) {
   return `#${formatHex(r)}${formatHex(g)}${formatHex(b)}`;
 }
 
-function parseColorName(fullName) {
-  const themeSeparatorIndex = fullName.indexOf('/');
-  const theme = fullName.slice(0, themeSeparatorIndex).trim().toLocaleLowerCase();
+function parseColorName(fullName, withTheme) {
+  const themeSeparatorIndex = withTheme ? fullName.indexOf('/') : -1;
+  const theme = withTheme ? fullName.slice(0, themeSeparatorIndex).trim().toLocaleLowerCase() : 'default';
   const name = fullName.slice(themeSeparatorIndex + 1).trim().toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-');
   return {
     theme,
@@ -1928,16 +1930,27 @@ function parseColorName(fullName) {
   };
 }
 
-async function writeColors(colors, getCssRootSelector) {
-  const themes = {
-    dark: [],
-    light: []
-  };
+async function writeColors(colors, config) {
+  var _config$themes;
+
+  const themes = {};
+  const multipleThemes = !!((_config$themes = config.themes) != null && _config$themes.length);
+
+  if (multipleThemes) {
+    var _config$themes2;
+
+    (_config$themes2 = config.themes) == null ? void 0 : _config$themes2.forEach(theme => {
+      themes[theme] = [];
+    });
+  } else {
+    themes['default'] = [];
+  }
+
   colors.forEach(color => {
     const {
       theme,
       name
-    } = parseColorName(color.name);
+    } = parseColorName(color.name, multipleThemes);
 
     if (themes[theme]) {
       themes[theme].push(_extends({}, color, {
@@ -1964,11 +1977,14 @@ async function writeColors(colors, getCssRootSelector) {
       }
 
       const colorName = `--color-${fill.name}`;
-      tailwindColors[fill.name] = `var(${colorName})`;
+      tailwindColors[fill.name] = config.generateCss ? `var(${colorName})` : `${formatColor(fill.color, fill.opacity)}`;
       return `${colorName}: ${formatColor(fill.color, fill.opacity)};`;
     }).join('\n\t');
-    const content = `:root${getCssRootSelector ? getCssRootSelector(theme) : ''} { ${colorsCss} }`;
-    saveColorTheme(theme, content);
+
+    if (config.generateCss) {
+      const content = `:root${multipleThemes && config.getCssRootSelector ? config.getCssRootSelector(theme) : ''} { ${colorsCss} }`;
+      saveColorTheme(theme, content);
+    }
   }
 
   saveTailwindColors(`module.exports = ${JSON.stringify(tailwindColors)}`);
@@ -1990,7 +2006,7 @@ function formatFont(fontNode) {
   return [italic ? 'italic' : null, fontWeightReloads[fontPostScriptName] || fontWeight, `${fontSize / 16}rem/${lineHeightPx / 16}rem`, `'${fontFamily}'`].filter(v => v).join(' ');
 }
 
-async function writeFonts(typographies) {
+async function writeFonts(typographies, config) {
   const fonts = {};
   const variablesText = typographies.filter(node => {
     if (node.name.match(/[а-яА-Я]+/)) {
@@ -2003,12 +2019,16 @@ async function writeFonts(typographies) {
     const fontName = node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-');
     const varName = `--font-${fontName}`;
     fonts[`.font-${fontName}`] = {
-      font: `var(${varName})`
+      font: config.generateCss ? `var(${varName})` : `${formatFont(node)}`
     };
     return `${varName}: ${formatFont(node)};`;
   }).join('\n\t');
-  const content = `:root { ${variablesText} }`;
-  saveFontsCss(content);
+
+  if (config.generateCss) {
+    const content = `:root { ${variablesText} }`;
+    saveFontsCss(content);
+  }
+
   saveTailwindFonts(`module.exports = ${JSON.stringify(fonts)}`);
 }
 
@@ -2071,13 +2091,13 @@ async function writeIcons(icons) {
   Object.keys(icons).forEach(key => saveIcon(key, icons[key])); // saveIconsIndex()
 }
 
-function generateReactArtifacts(typographies, colors, icons, getCssRootSelector) {
+function generateReactArtifacts(config, typographies, colors, icons) {
   if (typographies) {
-    writeFonts(typographies);
+    writeFonts(typographies, config);
   }
 
   if (colors) {
-    writeColors(colors, getCssRootSelector);
+    writeColors(colors, config);
   }
 
   if (icons) {
@@ -2096,8 +2116,8 @@ async function importFromFigma(config) {
     typography,
     colors,
     icons
-  } = await generateDSL(data, config.skipIcons);
-  if (config.exportType == 'react') generateReactArtifacts(typography, colors, icons, config.getCssRootSelector); // if (config.exportType == 'flutter') generateReactArtifacts(typography, colors, icons);
+  } = await generateDSL(data, config);
+  if (config.exportType == 'react') generateReactArtifacts(config, typography, colors, icons); // if (config.exportType == 'flutter') generateReactArtifacts(typography, colors, icons);
 }
 
 exports.importFromFigma = importFromFigma;

@@ -1,3 +1,4 @@
+import { Config } from '../config'
 import { Typography } from '../dsl'
 import { saveFontsCss, saveTailwindFonts } from './resource'
 
@@ -18,7 +19,7 @@ function formatFont(fontNode: Typography) {
     .join(' ')
 }
 
-async function writeFonts(typographies: Typography[]) {
+async function writeFonts(typographies: Typography[], config: Config) {
   const fonts: Record<string, any> = {}
 
   const variablesText = typographies
@@ -32,14 +33,19 @@ async function writeFonts(typographies: Typography[]) {
     .map((node) => {
       const fontName = node.name.toLocaleLowerCase().replace(/[ /%()+#,".]+/g, '-')
       const varName = `--font-${fontName}`
-      fonts[`.font-${fontName}`] = { font: `var(${varName})` }
+      fonts[`.font-${fontName}`] = {
+        font: config.generateCss ? `var(${varName})` : `${formatFont(node)}`,
+      }
       return `${varName}: ${formatFont(node)};`
     })
     .join('\n\t')
 
-  const content = `:root { ${variablesText} }`
+  if (config.generateCss) {
+    const content = `:root { ${variablesText} }`
 
-  saveFontsCss(content)
+    saveFontsCss(content)
+  }
+
   saveTailwindFonts(`module.exports = ${JSON.stringify(fonts)}`)
 }
 

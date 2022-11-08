@@ -1,4 +1,5 @@
 import { Color, FileResponse, TypeStyle } from 'figma-js';
+import { Config } from './config';
 declare type Typography = Pick<TypeStyle, 'italic' | 'fontWeight' | 'fontSize' | 'lineHeightPx' | 'fontFamily' | 'fontPostScriptName'> & {
     name: string;
 };
@@ -10,7 +11,7 @@ declare type ColorData = {
 declare type IconName = string;
 declare type IconSVGContent = string;
 declare type Icons = Record<IconName, IconSVGContent>;
-declare function generateDSL(rawData: FileResponse, skipIcons?: boolean): Promise<{
+declare function generateDSL(rawData: FileResponse, config: Config): Promise<{
     typography: Typography[] | undefined;
     colors: ColorData[] | undefined;
     icons: Icons | undefined;

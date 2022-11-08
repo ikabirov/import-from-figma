@@ -1,3 +1,4 @@
+import { Config } from '../config'
 import { ColorData, Icons, Typography } from '../dsl'
 
 import { writeColors } from './colors'
@@ -5,17 +6,17 @@ import { writeFonts } from './fonts'
 import { writeIcons } from './icons'
 
 function generateReactArtifacts(
+  config: Config,
   typographies?: Typography[],
   colors?: ColorData[],
-  icons?: Icons,
-  getCssRootSelector?: (theme: string) => string
+  icons?: Icons
 ) {
   if (typographies) {
-    writeFonts(typographies)
+    writeFonts(typographies, config)
   }
 
   if (colors) {
-    writeColors(colors, getCssRootSelector)
+    writeColors(colors, config)
   }
 
   if (icons) {
