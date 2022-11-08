@@ -1773,15 +1773,26 @@ async function parseColors(pageId) {
   return colors;
 }
 
+function getIconName(meta, parentName) {
+  if (!parentName) {
+    return meta.name;
+  }
+
+  const props = meta.name.split(', ').map(name => name.split('=')[1]);
+  return [parentName, ...props].join('-');
+}
+
 async function parseIcons(pageId) {
   const node = await loadNode(pageId);
 
   if (!(node != null && node.components)) {
     return;
-  }
+  } // @ts-expect-error
+
 
   const {
-    components
+    components,
+    componentSets
   } = node;
   const ids = Object.keys(components);
   const images = await loadSvgUrls(ids);
@@ -1790,8 +1801,12 @@ async function parseIcons(pageId) {
   let completed = 0;
 
   for (const id of ids) {
-    const iconUrl = images[id];
-    const saveIconPromise = fetch(iconUrl).then(res => res.text()).then(iconText => icons[components[id].name] = iconText).catch(e => console.log(e));
+    var _componentSets$compon;
+
+    const iconUrl = images[id]; // @ts-expect-error
+
+    let parentName = ((_componentSets$compon = componentSets[components[id].componentSetId]) == null ? void 0 : _componentSets$compon.name) || '';
+    const saveIconPromise = fetch(iconUrl).then(res => res.text()).then(iconText => icons[getIconName(components[id], parentName)] = iconText).catch(e => console.log(e));
 
     if (queue.length === 0) {
       console.log(`fetch icons progress: ${(completed / ids.length * 100).toFixed(2)}%`);

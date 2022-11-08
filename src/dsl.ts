@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { Color, FileResponse, TypeStyle, Text, Rectangle } from 'figma-js'
+import { Color, FileResponse, TypeStyle, Text, Rectangle, ComponentMetadata } from 'figma-js'
 import { loadNode, loadNodes, loadSvgUrls } from './loader'
 import { Config } from './config'
 
@@ -78,6 +78,16 @@ async function parseColors(pageId: string): Promise<ColorData[] | undefined> {
   return colors
 }
 
+function getIconName(meta: ComponentMetadata, parentName: string) {
+  if (!parentName) {
+    return meta.name
+  }
+
+  const props = meta.name.split(', ').map((name) => name.split('=')[1])
+
+  return [parentName, ...props].join('-')
+}
+
 async function parseIcons(pageId: string): Promise<Icons | undefined> {
   const node = await loadNode(pageId)
 
@@ -85,7 +95,8 @@ async function parseIcons(pageId: string): Promise<Icons | undefined> {
     return
   }
 
-  const { components } = node
+  // @ts-expect-error
+  const { components, componentSets } = node
   const ids = Object.keys(components)
 
   const images = await loadSvgUrls(ids)
@@ -98,9 +109,12 @@ async function parseIcons(pageId: string): Promise<Icons | undefined> {
 
   for (const id of ids) {
     const iconUrl = images[id]
+    // @ts-expect-error
+    let parentName = componentSets[components[id].componentSetId]?.name || ''
+
     const saveIconPromise = fetch(iconUrl)
       .then((res) => res.text())
-      .then((iconText) => (icons[components[id].name] = iconText))
+      .then((iconText) => (icons[getIconName(components[id], parentName)] = iconText))
       .catch((e) => console.log(e))
 
     if (queue.length === 0) {
