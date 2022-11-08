@@ -49,11 +49,9 @@ function initializeReactResource(config: Config) {
     rmdirSync(COLORS_FOLDER, { recursive: true })
   } catch (e) {}
 
-  if (!config.skipIcons) {
-    try {
-      rmdirSync(ICONS_FOLDER, { recursive: true })
-    } catch (e) {}
-  }
+  try {
+    rmdirSync(ICONS_FOLDER, { recursive: true })
+  } catch (e) {}
 }
 
 function writeFile(path: string, content: string) {

@@ -1856,13 +1856,11 @@ function initializeReactResource(config) {
     });
   } catch (e) {}
 
-  if (!config.skipIcons) {
-    try {
-      fs.rmdirSync(ICONS_FOLDER, {
-        recursive: true
-      });
-    } catch (e) {}
-  }
+  try {
+    fs.rmdirSync(ICONS_FOLDER, {
+      recursive: true
+    });
+  } catch (e) {}
 }
 
 function writeFile(path$1, content) {
