@@ -13,7 +13,9 @@ function initializeLoader(config: Config) {
 }
 
 function loadRoot() {
-  return client.file(documentId)
+  return client.file(documentId, {
+    depth: 1,
+  })
 }
 
 async function loadNodes(ids: string[]) {
